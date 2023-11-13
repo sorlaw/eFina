@@ -26,8 +26,7 @@ import * as Print from 'expo-print';
 export default function App() {
   const [nama, setNama] = useState("");
   const [nominal, setNominal] = useState("");
-  const [visible, setVisible] = React.useState(false);
-  const [tgl, setTgl] = useState("");
+  const [visible, setVisible] = useState(false);
   const [data, setData] = useState([]);
   const showModal = () => setVisible(true);
   const hideModal = () => setVisible(false);
@@ -49,7 +48,6 @@ export default function App() {
     }).then(() => {
 
       handleGetItems();
-      console.log('hello');
     });
    
   };
@@ -142,8 +140,6 @@ export default function App() {
     setupDatabase();
     handleGetItems();
     
-    
-    console.log(data);
   }, []);
 
   useEffect(() => {
@@ -153,8 +149,8 @@ export default function App() {
 
   const handleAddItem = () => {
     console.log(tahun, bulan, hari);
-    setTgl(`${tahun}-${bulan}-${hari}`);
-    addItem(nama, nominal, tgl, (insertedId) => {
+    const tanggal = `${tahun}-${bulan}-${hari}`;
+    addItem(nama, nominal, tanggal, (insertedId) => {
       console.log("item dimasukkan :" + insertedId);
     });
     
