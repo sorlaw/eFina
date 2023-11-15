@@ -15,7 +15,8 @@ import {
   TextInput,
   List,
   IconButton,
-  MD3Colors
+  MD3Colors,
+  ActivityIndicator
 } from "react-native-paper";
 import * as Print from 'expo-print';
 
@@ -49,7 +50,7 @@ export default function App() {
 
       handleGetItems();
     });
-   
+
   };
   const html = `
 <html>
@@ -72,22 +73,32 @@ export default function App() {
               </tr>
             </thead>
             <tbody>
-              ${data.map((val) => 
-              `<tr>
+              ${data.map((val) =>
+    `<tr>
                 <td>${nomor2++}</td>
                 <td>${val.nama}</td>
                 <td>${val.nominal}</td>
                 <td>${val.waktu}</td>
               </tr>`
 
-              )}
+  )}
               
             </tbody>
+            <tfooter>
+            <tr>
+            <td colspan="2">
+            Total Pengeluaran :
+            </td>
+            <td colspan="2">
+            ${data.length > 0 ? data.map((val) => parseInt(val.nominal)).reduce((total, num) => total + num) : ""}
+            </td>
+            </tr>
+            </tfooter>
           </table>
     </div>
   </body>
 </html>`;
-  
+
 
   const hapusData = () => {
     const db = SQLite.openDatabase("keuangan.db");
@@ -139,7 +150,7 @@ export default function App() {
   useEffect(() => {
     setupDatabase();
     handleGetItems();
-    
+
   }, []);
 
   useEffect(() => {
@@ -148,17 +159,19 @@ export default function App() {
 
 
   const handleAddItem = () => {
+
+    hideModal();
     console.log(tahun, bulan, hari);
     const tanggal = `${tahun}-${bulan}-${hari}`;
     addItem(nama, nominal, tanggal, (insertedId) => {
       console.log("item dimasukkan :" + insertedId);
     });
-    
+
     handleGetItems();
-    hideModal();
+
   };
 
-  
+
   const renderData = ({ item }) => {
 
     return (
@@ -179,7 +192,7 @@ export default function App() {
         <View style={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}>
           <Text style={{ color: 'white' }}>{item.nama}</Text>
         </View>
-        <View style={{flexGrow: 1, justifyContent: 'center', alignItems: 'center'}}>
+        <View style={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}>
           <Text style={{ color: 'white', }}>{item.nominal}</Text>
         </View>
 
@@ -200,13 +213,17 @@ export default function App() {
 
   return (
     <PaperProvider>
+      <StatusBar style="light" />
       <View style={styles.container}>
         <ImageBackground source={Bg} resizeMode="cover" style={{ flex: 1, justifyContent: 'center' }}>
+          <Text style={{ color: 'white', marginTop: '10%', marginLeft: '3%' }} variant="bodyLarge" >Total Pengeluaran :
+            {data.length > 0 ? data.map((val) => parseInt(val.nominal)).reduce((total, num) => total + num) : ""}
+          </Text>
           <FlatList
             data={data}
             keyExtractor={(item) => item.id}
             renderItem={renderData}
-            style={{ marginTop: "15%" }}
+            style={{ marginTop: "2%" }}
           />
           <Portal>
             <Modal
@@ -230,12 +247,13 @@ export default function App() {
               <Button mode="contained" onPress={handleAddItem}>
                 Tambah
               </Button>
+
             </Modal>
           </Portal>
-          <FAB icon="plus" style={styles.fab} onPress={showModal} />
+          <FAB icon="plus" style={styles.fab} onPress={showModal} rippleColor={'#000000'} />
           <FAB icon="trash-can" style={styles.sec} onPress={hapusData} color="white" />
           <FAB icon="printer" style={styles.thr} onPress={print} color="white" />
-          
+
         </ImageBackground>
       </View>
     </PaperProvider>
@@ -267,5 +285,5 @@ const styles = StyleSheet.create({
     bottom: 0,
     backgroundColor: 'blue',
   },
- 
+
 });
